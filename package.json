@@ -13,10 +13,10 @@
     "asar": false,
     "productName": "Geranciador de credenciais Aws",
     "files": [
-     "dist/**/*",
-    "api/**/*",
-    "electron.js"
-      ],
+      "dist/**/*",
+      "api/**/*",
+      "electron.js"
+    ],
     "directories": {
       "output": "dist"
     },
@@ -37,12 +37,12 @@
     "dev": "vite",
     "build": "vite build",
     "startapi": "node api/index.js",
-    "start": "npm run build && NODE_ENV=production electron .",
+    "start": "NODE_ENV=production electron .",
     "electron": "NODE_ENV=development electron .",
     "start:dev:all": "concurrently \"node api/index.js\" \"npm run dev\" \"npm run electron\"",
-    "start:all": "concurrently \"node api/index.js\" \"npm run start\"",
+    "start:all": "concurrently  \"npm run start\"",
     "build-app": "electron-builder",
-    "deploy":" npm run build && npm run build-app &&  sudo dpkg -i ./dist/gerenciador_aws_0.0.0_amd64.deb"
+    "deploy": " npm run build && npm run build-app &&  sudo dpkg -i ./dist/gerenciador_aws_0.0.1_amd64.deb"
   },
   "dependencies": {
     "antd": "^5.24.9",

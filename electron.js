@@ -20,15 +20,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-
-
   createWindow();
 
   // 🟡 Inicia a API como processo filho
-  console.log("AAA",path.dirname())
-  const apiPath = join(path.dirname(), 'api', 'index.js');
-  const api = spawn(process.execPath, [apiPath], {
-    cwd: __dirname,
+  const apiPath = path.join('api', 'index.js');
+  const api = spawn('node', [apiPath], {
+    cwd: '',
     env: process.env,
     stdio: 'inherit',
   });
