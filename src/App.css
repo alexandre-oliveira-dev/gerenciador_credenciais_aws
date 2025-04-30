@@ -1,0 +1,20 @@
+#success {
+  animation: push 0.090s ease-in;
+  position: absolute;
+  right: 10px;
+}
+
+@keyframes push {
+  0% {
+    right: 0px;
+  }
+
+  50% {
+    right: 20px;
+  }
+
+  100% {
+    right: 10px;
+  }
+
+}

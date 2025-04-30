@@ -1,0 +1,70 @@
+{
+  "name": "gerenciador_aws",
+  "private": true,
+  "version": "0.0.1",
+  "main": "electron.js",
+  "type": "module",
+  "homepage": "https://github.com/seu-usuario/seu-repositorio",
+  "author": {
+    "email": "alexandredev.frontend@gmail.com"
+  },
+  "build": {
+    "appId": "aws-manager",
+    "asar": false,
+    "productName": "Geranciador de credenciais Aws",
+    "files": [
+     "dist/**/*",
+    "api/**/*",
+    "electron.js"
+      ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ]
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "startapi": "node api/index.js",
+    "start": "npm run build && NODE_ENV=production electron .",
+    "electron": "NODE_ENV=development electron .",
+    "start:dev:all": "concurrently \"node api/index.js\" \"npm run dev\" \"npm run electron\"",
+    "start:all": "concurrently \"node api/index.js\" \"npm run start\"",
+    "build-app": "electron-builder",
+    "deploy":" npm run build && npm run build-app &&  sudo dpkg -i ./dist/gerenciador_aws_0.0.0_amd64.deb"
+  },
+  "dependencies": {
+    "antd": "^5.24.9",
+    "fs": "^0.0.1-security",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "electron": "^36.0.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  }
+}
