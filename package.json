@@ -4,9 +4,10 @@
   "version": "0.0.1",
   "main": "electron.js",
   "type": "module",
-  "homepage": "https://github.com/seu-usuario/seu-repositorio",
+  "homepage": "https://github.com/alexandre-oliveira-dev/gerenciador_credenciais_aws",
   "author": {
-    "email": "alexandredev.frontend@gmail.com"
+    "email": "alexandredev.frontend@gmail.com",
+    "name": "Alexandre"
   },
   "build": {
     "appId": "aws-manager",
@@ -21,7 +22,7 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis"
+      "target": "exe"
     },
     "linux": {
       "target": [
@@ -46,7 +47,6 @@
   },
   "dependencies": {
     "antd": "^5.24.9",
-    "fs": "^0.0.1-security",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "yarn": "^1.22.22"

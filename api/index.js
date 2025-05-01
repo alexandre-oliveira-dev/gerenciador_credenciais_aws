@@ -37,9 +37,9 @@ app.get("/current", (req, res) => {
 
   const decode = new TextDecoder()
   const response = JSON.stringify(decode.decode(Buffer.from(currentAws),'utf-8'))
-  const match = response.match(/stage:(.+)/);
+  const match = response.match(/stage:(.+)/) || [];
 
-  const stage = match[1].replace("\\n", " ").trim().replace('"',"");
+  const stage = match[1]?.replace("\\n", " ").trim().replace('"',"");
 
   return res.json(stage)
 })

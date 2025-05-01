@@ -1,38 +1,39 @@
-import { spawn } from 'child_process';
-import path, { dirname, join } from 'path';
+import { fork } from 'child_process';
+import { join, dirname } from 'path';
 import { app, BrowserWindow } from 'electron';
 import { fileURLToPath } from 'url';
 
 let mainWindow;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
     },
   });
 
-  mainWindow.loadFile('dist/index.html'); // ou sua build Vite, dependendo do caminho
-
-  mainWindow.webContents.openDevTools()
+  mainWindow.loadFile('dist/index.html');
+  // mainWindow.webContents.openDevTools()
 }
+
+let apiProcess;
 
 app.whenReady().then(() => {
   createWindow();
 
-  // 🟡 Inicia a API como processo filho
-  const apiPath = path.join('api', 'index.js');
-  const api = spawn('node', [apiPath], {
-    cwd: '',
+  const apiPath = join(__dirname, 'api', 'index.js');
+  apiProcess = fork(apiPath, {
+    cwd: __dirname,
     env: process.env,
-    stdio: 'inherit',
   });
+});
 
-  app.on('before-quit', () => {
-    api.kill(); // Finaliza a API ao fechar o app
-  });
+app.on('before-quit', () => {
+  if (apiProcess) apiProcess.kill();
 });
 
 app.on('window-all-closed', () => {
