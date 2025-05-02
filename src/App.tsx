@@ -7,6 +7,8 @@ import {useQueries} from "react-query";
 import {Footer} from "antd/es/layout/layout";
 import InsertComponent from "./components/insertComponentModal";
 import {create, remove, toggleAwsCredentials} from "./services/httpRequests";
+import useToast from "./components/toastHook";
+import Toast from "./components/toast";
 
 export type CredentialsProps = {
   accessKeyId: string;
@@ -18,6 +20,7 @@ function App() {
   const [open, setOpen] = useState(false);
   const [form] = useForm<CredentialsProps>();
   let credencial: CredentialsProps;
+  const {toastProps, showToast} = useToast();
 
   const [
     {data, isLoading, refetch},
@@ -121,16 +124,11 @@ function App() {
           type="primary"
           onClick={async () => {
             await toggleAwsCredentials(credencial).then(() => {
-              const element = document.getElementById("success");
-              if (element) {
-                element.innerHTML = `Stage alterado para <strong>${credencial?.stage}</strong>`;
-                element.style.display = "grid";
-                refetchCurrentStage();
-
-                setTimeout(() => {
-                  element.style.display = "none";
-                }, 2000);
-              }
+              refetchCurrentStage();
+              showToast({
+                color: "green",
+                text: `Stage alterado para: ${credencial?.stage}`,
+              });
             });
           }}
         >
@@ -197,17 +195,6 @@ function App() {
             },
           ]}
         ></Table>
-        <Tag
-          style={{
-            alignItems: "center",
-            fontSize: 20,
-            display: "none",
-            justifyContent: "center",
-            padding: "1rem",
-          }}
-          color="green"
-          id="success"
-        ></Tag>
       </Col>
       <Footer
         style={{
@@ -225,6 +212,7 @@ function App() {
         handleOpen={handleOpen}
         open={open}
       ></InsertComponent>
+      <Toast {...toastProps}></Toast>
     </>
   );
 }

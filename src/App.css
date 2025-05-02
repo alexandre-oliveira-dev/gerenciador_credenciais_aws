@@ -1,7 +1,8 @@
-#success {
+#toast {
   animation: push 0.090s ease-in;
   position: absolute;
   right: 10px;
+  top: 100px;
 }
 
 @keyframes push {
