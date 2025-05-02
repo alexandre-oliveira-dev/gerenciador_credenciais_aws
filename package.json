@@ -21,10 +21,11 @@
       "!api/credentials.json"
     ],
     "directories": {
-      "output": "dist"
+      "output": "exec-files/"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "public/icon.ico"
     },
     "linux": {
       "target": [
@@ -44,9 +45,11 @@
     "electron": "NODE_ENV=development electron .",
     "start:dev:all": "concurrently \"node api/index.js\" \"npm run build\" \"npm run dev\" \"npm run electron\"",
     "start:all": "concurrently  \"npm run start\"",
-    "build-app": "electron-builder",
+    "build-app": "electron-builder --linux --win",
     "deploy-win": "npm run build && electron-builder --win",
-    "deploy": "npm run build && npm run build-app && yarn deploy-win && sudo dpkg -i ./dist/gerenciador_aws_1.0.0_amd64.deb"
+    "install-ubuntu":"sudo dpkg -i ./exec-files/gerenciador_aws_1.0.0_amd64.deb",
+    "delete-unnecessary-files":"rm -rf exec-files/*.yml exec-files/linux-unpacked exec-files/win-unpacked exec-files/*.blockmap exec-files/*.yaml",
+    "deploy": "npm run build && npm run build-app && yarn install-ubuntu && yarn delete-unnecessary-files"
   },
   "dependencies": {
     "antd": "^5.24.9",

@@ -3,3 +3,4 @@ dist
 /api/node_modules/
 api/credentials.json
 node_modules
+exec-files
