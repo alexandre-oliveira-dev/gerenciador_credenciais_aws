@@ -1,158 +1,57 @@
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Select,
-  Table,
-  Tag,
-  Typography,
-} from "antd";
+import {Button, Col, Row, Select, Table, Tag, Typography} from "antd";
 import "./App.css";
 import Title from "antd/es/typography/Title";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useForm} from "antd/es/form/Form";
-import {useQuery} from "react-query";
+import {useQueries} from "react-query";
+import {Footer} from "antd/es/layout/layout";
+import InsertComponent from "./components/insertComponentModal";
+import {create, remove, toggleAwsCredentials} from "./services/httpRequests";
 
-type CredentialsProps = {
+export type CredentialsProps = {
   accessKeyId: string;
   secretKeyId: string;
   stage: string;
 };
 
 function App() {
-  const [current, setCurrent] = useState<string>();
   const [open, setOpen] = useState(false);
-  const [form] = useForm<{
-    accessKeyId: string;
-    secretKeyId: string;
-    stage: string;
-  }>();
-
-  const {data, isLoading, refetch} = useQuery<CredentialsProps[]>({
-    queryFn: async () =>
-      (await fetch("http://localhost:8000/getAll", {method: "get"})).json(),
-  });
-
-  async function refetchCurrentStage() {
-    const res = await fetch("http://localhost:8000/current", {
-      method: "GET",
-    });
-
-    res.json().then(val => {
-      setCurrent(String(val));
-    });
-  }
-
-  useEffect(() => {
-    async function get() {
-      await refetchCurrentStage();
-    }
-    get();
-  }, []);
-
+  const [form] = useForm<CredentialsProps>();
   let credencial: CredentialsProps;
 
-  async function toggleAwsCredentials() {
-    if (!credencial.stage) {
-      return;
-    }
+  const [
+    {data, isLoading, refetch},
+    {data: currentCredential, refetch: refetchCurrentStage},
+  ] = useQueries<[CredentialsProps[], string]>([
+    {
+      queryFn: async (): Promise<CredentialsProps[]> =>
+        (await fetch("http://localhost:65000/getAll", {method: "get"})).json(),
+      queryKey: "getAll",
+    },
+    {
+      queryFn: async (): Promise<string> =>
+        (await fetch("http://localhost:65000/current", {method: "get"})).json(),
+      queryKey: "current",
+    },
+  ]) as [
+    {
+      data: CredentialsProps[] | undefined;
+      isLoading: boolean;
+      refetch: () => void;
+    },
+    {data: string | undefined; refetch: () => void}
+  ];
 
-    await fetch("http://localhost:8000/changeCredential", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        file: `
-[default]
-aws_access_key_id: ${credencial?.accessKeyId}
-aws_secret_access_key: ${credencial?.secretKeyId}
-stage:${credencial?.stage}`,
-      }),
-    });
-  }
-
-  async function create() {
-    const values = form.getFieldsValue();
-
-    await form.validateFields();
-
-    if (data?.find(i => i?.stage === values?.stage?.toLocaleLowerCase())) {
-      const element = document.getElementById("toas-error");
-
-      if (element) {
-        element.style.display = "block";
-        element.innerHTML = `Stage: ${values.stage}, já cadastrado`;
-        element.style.color = "red";
-
-        setTimeout(() => {
-          element.style.display = "none";
-        }, 2000);
-      }
-      return;
-    }
-
-    const body = JSON.stringify({
-      accessKeyId: values.accessKeyId,
-      secretKeyId: values.secretKeyId,
-      stage: values.stage?.toLocaleLowerCase(),
-    });
-
-    await fetch("http://localhost:8000/create", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body,
-    }).then(() => {
+  function handleOpen() {
+    if (open) {
       setOpen(false);
-      refetch();
-    });
-  }
-
-  async function remove(stage: string) {
-    await fetch(`http://localhost:8000/delete?stage=${stage}`, {
-      method: "delete",
-    }).then(() => {
-      refetch();
-    });
+      return;
+    }
+    setOpen(true);
   }
 
   return (
     <>
-      <Modal
-        okText="salvar"
-        cancelText="cancelar"
-        title={"Inserir nova credencial"}
-        open={open}
-        centered
-        onOk={() => create()}
-        onCancel={() => setOpen(false)}
-      >
-        <Form layout="vertical" form={form}>
-          <Form.Item
-            rules={[{required: true}]}
-            name={"accessKeyId"}
-            label="AccessKeyId"
-          >
-            <Input placeholder="Digite a chave"></Input>
-          </Form.Item>
-          <Form.Item
-            rules={[{required: true}]}
-            name={"secretKeyId"}
-            label="SecretKeyId"
-          >
-            <Input placeholder="Digite a chave secreta"></Input>
-          </Form.Item>
-          <Form.Item rules={[{required: true}]} name={"stage"} label="Stage">
-            <Input placeholder="Digite o nome do stage"></Input>
-          </Form.Item>
-          <span id="toas-error"></span>
-        </Form>
-      </Modal>
       <Col
         style={{
           display: "flex",
@@ -221,12 +120,12 @@ stage:${credencial?.stage}`,
         <Button
           type="primary"
           onClick={async () => {
-            await toggleAwsCredentials().then(async () => {
+            await toggleAwsCredentials(credencial).then(() => {
               const element = document.getElementById("success");
               if (element) {
                 element.innerHTML = `Stage alterado para <strong>${credencial?.stage}</strong>`;
                 element.style.display = "grid";
-                await refetchCurrentStage();
+                refetchCurrentStage();
 
                 setTimeout(() => {
                   element.style.display = "none";
@@ -268,7 +167,7 @@ stage:${credencial?.stage}`,
                       {text}
                     </Tag>
                     <>
-                      {current && rec.stage === current && (
+                      {currentCredential && rec.stage === currentCredential && (
                         <Tag color="green">{"Atual"}</Tag>
                       )}
                     </>
@@ -281,7 +180,10 @@ stage:${credencial?.stage}`,
               render(_, rec) {
                 return (
                   <>
-                    <Button title="deletar" onClick={() => remove(rec.stage)}>
+                    <Button
+                      title="deletar"
+                      onClick={() => remove({refetch, stage: rec.stage})}
+                    >
                       <img
                         width="20"
                         height="20"
@@ -307,6 +209,22 @@ stage:${credencial?.stage}`,
           id="success"
         ></Tag>
       </Col>
+      <Footer
+        style={{
+          position: "absolute",
+          bottom: "0px",
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
+        <p>Versão do sistema: v1.0.0</p>
+      </Footer>
+      <InsertComponent
+        create={() => create({data, form, refetch, setOpen})}
+        form={form}
+        handleOpen={handleOpen}
+        open={open}
+      ></InsertComponent>
     </>
   );
 }

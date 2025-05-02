@@ -1,7 +1,7 @@
 {
   "name": "gerenciador_aws",
   "private": true,
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "electron.js",
   "type": "module",
   "homepage": "https://github.com/alexandre-oliveira-dev/gerenciador_credenciais_aws",
@@ -42,11 +42,11 @@
     "startapi": "node api/index.js",
     "start": "NODE_ENV=production electron .",
     "electron": "NODE_ENV=development electron .",
-    "start:dev:all": "concurrently \"node api/index.js\" \"npm run dev\" \"npm run electron\"",
+    "start:dev:all": "concurrently \"node api/index.js\" \"npm run build\" \"npm run dev\" \"npm run electron\"",
     "start:all": "concurrently  \"npm run start\"",
     "build-app": "electron-builder",
     "deploy-win": "npm run build && electron-builder --win",
-    "deploy": "npm run build && npm run build-app &&  sudo dpkg -i ./dist/gerenciador_aws_0.0.1_amd64.deb"
+    "deploy": "npm run build && npm run build-app && yarn deploy-win && sudo dpkg -i ./dist/gerenciador_aws_1.0.0_amd64.deb"
   },
   "dependencies": {
     "antd": "^5.24.9",

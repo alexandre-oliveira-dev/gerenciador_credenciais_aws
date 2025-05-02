@@ -3,7 +3,6 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os');
 const cors = require('cors')
-const { exec } = require('child_process');
 
 const app = express()
 
@@ -52,7 +51,7 @@ app.post("/create", (req, res) => {
   
   const { body } = req;
   
-  const filePath = path.join("./", 'credentials.json');
+  const filePath = path.join(os.homedir(), 'gerenciador-aws', 'credentials.json')
 
   try {
 
@@ -60,6 +59,10 @@ app.post("/create", (req, res) => {
     
     if (!fs.existsSync(filePath)) {
       currentCredencials = '[]'
+      fs.mkdir(path.join(os.homedir(), 'gerenciador-aws'), (er) => {
+        console.log("🚀 ~ fs.mkdir ~ er:", er)
+        
+      })
     } else {
        currentCredencials = Buffer.from(fs.readFileSync(filePath)).toString('utf-8') 
     }
@@ -83,7 +86,7 @@ app.delete("/delete", (req, res) => {
   
   const { query } = req;
   
-  const filePath = path.join("./", 'credentials.json');
+  const filePath = path.join(os.homedir(), 'gerenciador-aws', 'credentials.json')
 
   try {
     const currentCredencials = Buffer.from(fs.readFileSync(filePath)).toString('utf-8') || '[]'
@@ -101,7 +104,8 @@ app.delete("/delete", (req, res) => {
 })
 
 app.get("/getAll", (req, res) => {
-    const filePath = path.join("./", 'credentials.json');
+  const filePath = path.join(os.homedir(), 'gerenciador-aws', 'credentials.json')
+
   try {
     if (fs.existsSync(filePath)) {
       const currentCredencials = Buffer.from(fs.readFileSync(filePath)).toString('utf-8') || '[]'
@@ -122,4 +126,4 @@ app.get('/', (req, res) => {
   });
 });
 
-app.listen(8000)
+app.listen(65000, ()=> console.log("api listed on port 65000"))
