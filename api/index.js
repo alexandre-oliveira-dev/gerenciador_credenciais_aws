@@ -55,11 +55,6 @@ app.post("/create", (req, res) => {
   const filePath = path.join("./", 'credentials.json');
 
   try {
-    
-    exec(`sudo chmod`, 777, (err) => { 
-      console.log("🚀 ~ fs.chmod ~ err:", err)
-      
-    })
 
     let currentCredencials = '[]'
     
@@ -72,10 +67,8 @@ app.post("/create", (req, res) => {
     const currentCredencialsParsed = JSON.parse(currentCredencials) 
 
     currentCredencialsParsed?.push(body)
-    console.log('11111')
     
     fs.writeFileSync(filePath, Buffer.from(JSON.stringify(currentCredencialsParsed)), "utf-8")
-    console.log('222222')
     
     return res.json("credencial cadastrada com sucesso!").status(200)
     

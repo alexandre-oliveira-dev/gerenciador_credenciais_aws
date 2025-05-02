@@ -13,23 +13,24 @@
     "appId": "aws-manager",
     "asar": false,
     "productName": "Geranciador de credenciais Aws",
-    "icon":"https://img.icons8.com/color/100/amazon-web-services.png",
     "files": [
       "dist/**/*",
       "api/**/*",
       "electron.js",
+      "public/*",
       "!api/credentials.json"
     ],
     "directories": {
       "output": "dist"
     },
     "win": {
-      "target": "exe"
+      "target": "nsis"
     },
     "linux": {
       "target": [
         "deb"
-      ]
+      ],
+      "icon": "public/icon.png"
     },
     "mac": {
       "target": "dmg"
@@ -44,7 +45,8 @@
     "start:dev:all": "concurrently \"node api/index.js\" \"npm run dev\" \"npm run electron\"",
     "start:all": "concurrently  \"npm run start\"",
     "build-app": "electron-builder",
-    "deploy": " npm run build && npm run build-app &&  sudo dpkg -i ./dist/gerenciador_aws_0.0.1_amd64.deb"
+    "deploy-win": "npm run build && electron-builder --win",
+    "deploy": "npm run build && npm run build-app &&  sudo dpkg -i ./dist/gerenciador_aws_0.0.1_amd64.deb"
   },
   "dependencies": {
     "antd": "^5.24.9",
