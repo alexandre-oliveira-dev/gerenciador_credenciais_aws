@@ -17,7 +17,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile('dist/index.html');
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 }
 
 let apiProcess;

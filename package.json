@@ -13,10 +13,12 @@
     "appId": "aws-manager",
     "asar": false,
     "productName": "Geranciador de credenciais Aws",
+    "icon":"https://img.icons8.com/color/100/amazon-web-services.png",
     "files": [
       "dist/**/*",
       "api/**/*",
-      "electron.js"
+      "electron.js",
+      "!api/credentials.json"
     ],
     "directories": {
       "output": "dist"
@@ -48,6 +50,7 @@
     "antd": "^5.24.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-query": "^3.39.3",
     "yarn": "^1.22.22"
   },
   "devDependencies": {

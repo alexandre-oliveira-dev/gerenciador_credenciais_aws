@@ -1,40 +1,42 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import {Button, Col, Row, Select, Typography} from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import "./App.css";
 import Title from "antd/es/typography/Title";
 import {useEffect, useState} from "react";
+import {useForm} from "antd/es/form/Form";
+import {useQuery} from "react-query";
 
 type CredentialsProps = {
-  stage?: string;
-  default?: boolean;
-  aws_access_key_id: string;
-  aws_secret_access_key: string;
+  accessKeyId: string;
+  secretKeyId: string;
+  stage: string;
 };
 
 function App() {
-  const crendencials = [
-    {
-      stage: "belem",
-      default: false,
-      aws_access_key_id: "AKIAXVVOPHOMCMK7FQNA",
-      aws_secret_access_key: "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",
-    },
-    {
-      stage: "votorantim",
-      default: false,
-      aws_access_key_id: "AKIAQFLZDWRNU7P4EVF2",
-      aws_secret_access_key: "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",
-    },
-    {
-      stage: "teste",
-      default: false,
-      aws_access_key_id: "AKIAWB23QWZNPQKARVAX",
-      aws_secret_access_key: "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",
-    },
-  ];
   const [current, setCurrent] = useState<string>();
+  const [open, setOpen] = useState(false);
+  const [form] = useForm<{
+    accessKeyId: string;
+    secretKeyId: string;
+    stage: string;
+  }>();
 
-  async function refetch() {
+  const {data, isLoading, refetch} = useQuery<CredentialsProps[]>({
+    queryFn: async () =>
+      (await fetch("http://localhost:8000/getAll", {method: "get"})).json(),
+  });
+
+  async function refetchCurrentStage() {
     const res = await fetch("http://localhost:8000/current", {
       method: "GET",
     });
@@ -46,7 +48,7 @@ function App() {
 
   useEffect(() => {
     async function get() {
-      await refetch();
+      await refetchCurrentStage();
     }
     get();
   }, []);
@@ -54,6 +56,10 @@ function App() {
   let credencial: CredentialsProps;
 
   async function toggleAwsCredentials() {
+    if (!credencial.stage) {
+      return;
+    }
+
     await fetch("http://localhost:8000/changeCredential", {
       method: "post",
       headers: {
@@ -62,15 +68,91 @@ function App() {
       body: JSON.stringify({
         file: `
 [default]
-aws_access_key_id: ${credencial?.aws_access_key_id}
-aws_secret_access_key: ${credencial?.aws_secret_access_key}
+aws_access_key_id: ${credencial?.accessKeyId}
+aws_secret_access_key: ${credencial?.secretKeyId}
 stage:${credencial?.stage}`,
       }),
     });
   }
 
+  async function create() {
+    const values = form.getFieldsValue();
+
+    await form.validateFields();
+
+    if (data?.find(i => i?.stage === values?.stage?.toLocaleLowerCase())) {
+      const element = document.getElementById("toas-error");
+
+      if (element) {
+        element.style.display = "block";
+        element.innerHTML = `Stage: ${values.stage}, já cadastrado`;
+        element.style.color = "red";
+
+        setTimeout(() => {
+          element.style.display = "none";
+        }, 2000);
+      }
+      return;
+    }
+
+    const body = JSON.stringify({
+      accessKeyId: values.accessKeyId,
+      secretKeyId: values.secretKeyId,
+      stage: values.stage?.toLocaleLowerCase(),
+    });
+
+    await fetch("http://localhost:8000/create", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    }).then(() => {
+      setOpen(false);
+      refetch();
+    });
+  }
+
+  async function remove(stage: string) {
+    await fetch(`http://localhost:8000/delete?stage=${stage}`, {
+      method: "delete",
+    }).then(() => {
+      refetch();
+    });
+  }
+
   return (
     <>
+      <Modal
+        okText="salvar"
+        cancelText="cancelar"
+        title={"Inserir nova credencial"}
+        open={open}
+        centered
+        onOk={() => create()}
+        onCancel={() => setOpen(false)}
+      >
+        <Form layout="vertical" form={form}>
+          <Form.Item
+            rules={[{required: true}]}
+            name={"accessKeyId"}
+            label="AccessKeyId"
+          >
+            <Input placeholder="Digite a chave"></Input>
+          </Form.Item>
+          <Form.Item
+            rules={[{required: true}]}
+            name={"secretKeyId"}
+            label="SecretKeyId"
+          >
+            <Input placeholder="Digite a chave secreta"></Input>
+          </Form.Item>
+          <Form.Item rules={[{required: true}]} name={"stage"} label="Stage">
+            <Input placeholder="Digite o nome do stage"></Input>
+          </Form.Item>
+          <span id="toas-error"></span>
+        </Form>
+      </Modal>
       <Col
         style={{
           display: "flex",
@@ -79,29 +161,58 @@ stage:${credencial?.stage}`,
           padding: "2rem",
         }}
       >
-        <Title level={2}>Credenciais Aws</Title>
+        <Row
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
+          <Title
+            style={{display: "flex", alignItems: "center", gap: 20}}
+            level={2}
+          >
+            <img
+              width="90"
+              height="90"
+              src="https://img.icons8.com/color/100/amazon-web-services.png"
+              alt="amazon-web-services"
+            />
+            Credenciais
+          </Title>
+        </Row>
 
-        <Row style={{alignItems: "center", gap: "10px"}}>
-          <Typography.Title style={{margin: 0}} level={5}>
-            Credencial atual:
-          </Typography.Title>
-          <p style={{margin: "0px", textTransform: "capitalize"}}>{current}</p>
+        <Row
+          style={{
+            width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
+          <Button
+            type="primary"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            Nova +
+          </Button>
         </Row>
 
         <Select
           placeholder="Selecione o stage"
+          loading={isLoading}
           onChange={item => {
             const parse = JSON.parse(item) as CredentialsProps;
-
-            parse.default = true;
-
             credencial = parse;
           }}
         >
-          {crendencials.map(item => {
+          {data?.map(item => {
             return (
               <Select.Option value={JSON.stringify(item)}>
-                {item.stage.toLocaleUpperCase()}
+                {item?.stage?.toLocaleUpperCase()}
               </Select.Option>
             );
           })}
@@ -113,9 +224,9 @@ stage:${credencial?.stage}`,
             await toggleAwsCredentials().then(async () => {
               const element = document.getElementById("success");
               if (element) {
-                element.innerText = `Stage alterado para ${credencial?.stage}`;
+                element.innerHTML = `Stage alterado para <strong>${credencial?.stage}</strong>`;
                 element.style.display = "grid";
-                await refetch();
+                await refetchCurrentStage();
 
                 setTimeout(() => {
                   element.style.display = "none";
@@ -124,24 +235,77 @@ stage:${credencial?.stage}`,
             });
           }}
         >
-          {" "}
           Alterar credencial
         </Button>
         <br />
-        <div
-          id="success"
+
+        <Table
+          size="small"
+          dataSource={data}
+          columns={[
+            {
+              title: "AccessKeyId",
+              dataIndex: "accessKeyId",
+              render(text) {
+                return <Typography.Text copyable>{text}</Typography.Text>;
+              },
+            },
+            {
+              title: "SecretKeyId",
+              dataIndex: "secretKeyId",
+              render(text) {
+                return <Typography.Text copyable>{text}</Typography.Text>;
+              },
+            },
+
+            {
+              title: "Stage",
+              dataIndex: "stage",
+              render(text, rec) {
+                return (
+                  <Row>
+                    <Tag style={{textTransform: "capitalize"}} color="blue">
+                      {text}
+                    </Tag>
+                    <>
+                      {current && rec.stage === current && (
+                        <Tag color="green">{"Atual"}</Tag>
+                      )}
+                    </>
+                  </Row>
+                );
+              },
+            },
+            {
+              title: "Ações",
+              render(_, rec) {
+                return (
+                  <>
+                    <Button title="deletar" onClick={() => remove(rec.stage)}>
+                      <img
+                        width="20"
+                        height="20"
+                        src="https://img.icons8.com/fluency-systems-regular/48/trash--v1.png"
+                        alt="trash--v1"
+                      />
+                    </Button>
+                  </>
+                );
+              },
+            },
+          ]}
+        ></Table>
+        <Tag
           style={{
-            width: "200px",
-            height: "40px",
-            background: "#00ff19",
+            alignItems: "center",
+            fontSize: 20,
             display: "none",
-            placeContent: "center",
-            color: "#fff",
-            fontSize: "15px",
-            borderRadius: "10px",
-            padding: "10px",
+            justifyContent: "center",
+            padding: "1rem",
           }}
-        ></div>
+          color="green"
+          id="success"
+        ></Tag>
       </Col>
     </>
   );

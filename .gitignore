@@ -1,4 +1,5 @@
-node_modeules
+
 dist
-./api/node_modeules
+api/node_modules
+api/credentials.json
 node_modules
