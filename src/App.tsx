@@ -1,4 +1,4 @@
-import {Button, Col, Row, Select, Table, Tag, Typography} from "antd";
+import {Button, Col, Row, Select} from "antd";
 import "./App.css";
 import Title from "antd/es/typography/Title";
 import {useState} from "react";
@@ -6,9 +6,12 @@ import {useForm} from "antd/es/form/Form";
 import {useQueries} from "react-query";
 import {Footer} from "antd/es/layout/layout";
 import InsertComponent from "./components/insertComponentModal";
-import {create, remove, toggleAwsCredentials} from "./services/httpRequests";
+import {create, toggleAwsCredentials} from "./services/httpRequests";
 import useToast from "./components/toastHook";
 import Toast from "./components/toast";
+import TableComponent from "./components/tableComponent";
+import {FiEye} from "react-icons/fi";
+import {GiSemiClosedEye} from "react-icons/gi";
 
 export type CredentialsProps = {
   accessKeyId: string;
@@ -21,6 +24,7 @@ function App() {
   const [form] = useForm<CredentialsProps>();
   let credencial: CredentialsProps;
   const {toastProps, showToast} = useToast();
+  const [hidden, setIsHidden] = useState(false);
 
   const [
     {data, isLoading, refetch},
@@ -88,9 +92,9 @@ function App() {
         <Row
           style={{
             width: "100%",
-            justifyContent: "space-between",
             alignItems: "center",
             marginBottom: 10,
+            gap: 10,
           }}
         >
           <Button
@@ -100,6 +104,17 @@ function App() {
             }}
           >
             Nova +
+          </Button>
+          <Button
+            onClick={() => {
+              if (hidden) {
+                setIsHidden(false);
+                return;
+              }
+              setIsHidden(true);
+            }}
+          >
+            {hidden ? <FiEye></FiEye> : <GiSemiClosedEye></GiSemiClosedEye>}
           </Button>
         </Row>
 
@@ -136,65 +151,12 @@ function App() {
         </Button>
         <br />
 
-        <Table
-          size="small"
-          dataSource={data}
-          columns={[
-            {
-              title: "AccessKeyId",
-              dataIndex: "accessKeyId",
-              render(text) {
-                return <Typography.Text copyable>{text}</Typography.Text>;
-              },
-            },
-            {
-              title: "SecretKeyId",
-              dataIndex: "secretKeyId",
-              render(text) {
-                return <Typography.Text copyable>{text}</Typography.Text>;
-              },
-            },
-
-            {
-              title: "Stage",
-              dataIndex: "stage",
-              render(text, rec) {
-                return (
-                  <Row>
-                    <Tag style={{textTransform: "capitalize"}} color="blue">
-                      {text}
-                    </Tag>
-                    <>
-                      {currentCredential && rec.stage === currentCredential && (
-                        <Tag color="green">{"Atual"}</Tag>
-                      )}
-                    </>
-                  </Row>
-                );
-              },
-            },
-            {
-              title: "Ações",
-              render(_, rec) {
-                return (
-                  <>
-                    <Button
-                      title="deletar"
-                      onClick={() => remove({refetch, stage: rec.stage})}
-                    >
-                      <img
-                        width="20"
-                        height="20"
-                        src="https://img.icons8.com/fluency-systems-regular/48/trash--v1.png"
-                        alt="trash--v1"
-                      />
-                    </Button>
-                  </>
-                );
-              },
-            },
-          ]}
-        ></Table>
+        <TableComponent
+          isHidden={hidden}
+          currentCredential={currentCredential}
+          data={data}
+          refetch={refetch}
+        ></TableComponent>
       </Col>
       <Footer
         style={{

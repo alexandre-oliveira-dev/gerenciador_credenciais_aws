@@ -47,14 +47,15 @@
     "start:all": "concurrently  \"npm run start\"",
     "build-app": "electron-builder --linux --win",
     "deploy-win": "npm run build && electron-builder --win",
-    "install-ubuntu":"sudo dpkg -i ./exec-files/gerenciador_aws_1.0.0_amd64.deb",
-    "delete-unnecessary-files":"rm -rf exec-files/*.yml exec-files/linux-unpacked exec-files/win-unpacked exec-files/*.blockmap exec-files/*.yaml",
+    "install-ubuntu": "sudo dpkg -i ./exec-files/gerenciador_aws_1.0.0_amd64.deb",
+    "delete-unnecessary-files": "rm -rf exec-files/*.yml exec-files/linux-unpacked exec-files/win-unpacked exec-files/*.blockmap exec-files/*.yaml",
     "deploy": "npm run build && npm run build-app && yarn install-ubuntu && yarn delete-unnecessary-files"
   },
   "dependencies": {
     "antd": "^5.24.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
     "react-query": "^3.39.3",
     "yarn": "^1.22.22"
   },
