@@ -4,6 +4,7 @@ const path = require('path')
 const os = require('os');
 const cors = require('cors')
 
+
 const app = express()
 
 app.use((req, res, next) => {
@@ -119,6 +120,7 @@ app.get("/getAll", (req, res) => {
       throw new Error(error)
     }
 })
+
 
 app.get('/', (req, res) => {
   res.json({
