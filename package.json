@@ -12,7 +12,7 @@
   "build": {
     "appId": "aws-manager",
     "asar": false,
-    "productName": "Geranciador de credenciais Aws",
+    "productName": "Gerenciador de credenciais Aws",
     "files": [
       "dist/**/*",
       "api/**/*",
