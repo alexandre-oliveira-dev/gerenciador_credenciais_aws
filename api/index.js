@@ -40,7 +40,7 @@ app.get("/current", (req, res) => {
 
   const decode = new TextDecoder()
   const response = JSON.stringify(decode.decode(Buffer.from(currentAws),'utf-8'))
-  const match = response.match(/stage:(.+)/) || [];
+  const match = response.match(/stage=(.+)/) || [];
 
   const stage = match[1]?.replace("\\n", " ").trim().replace('"',"");
 
@@ -98,6 +98,32 @@ app.delete("/delete", (req, res) => {
     return res.json("credencial deletata com sucesso!").status(200)
 
   } catch (error) {
+    throw new Error(error)
+  }
+
+})
+
+app.put("/edit", (req, res) => {
+  
+  const { query, body } = req;
+  
+  const filePath = path.join(os.homedir(), 'gerenciador-aws', 'credentials.json')
+
+  try {
+    const currentCredencials = Buffer.from(fs.readFileSync(filePath)).toString('utf-8') || '[]'
+
+    let currentCredencialsParsed = JSON.parse(currentCredencials) 
+
+    currentCredencialsParsed?.filter(item => item?.stage !== query?.stage)
+
+    currentCredencialsParsed.push(body)
+
+    fs.writeFileSync(filePath, Buffer.from(JSON.stringify(currentCredencialsParsed)), "utf-8")
+    
+    return res.json("credencial editada com sucesso!").status(200)
+
+  } catch (error) {
+    console.log("🚀 ~ app.delete ~ error:", error)
     throw new Error(error)
   }
 

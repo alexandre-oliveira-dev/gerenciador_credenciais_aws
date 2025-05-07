@@ -18,16 +18,16 @@ export async function toggleAwsCredentials(credencial: CredentialsProps) {
       file: credencial.sessionToken
         ? `
 [default]
-aws_access_key_id: ${credencial?.accessKeyId}
-aws_secret_access_key: ${credencial?.secretKeyId}
-aws_session_token:${credencial.sessionToken}
-stage:${credencial?.stage}
+aws_access_key_id=${credencial?.accessKeyId}
+aws_secret_access_key=${credencial?.secretKeyId}
+aws_session_token=${credencial.sessionToken}
+stage=${credencial?.stage}
 `
         : `
 [default]
-aws_access_key_id: ${credencial?.accessKeyId}
-aws_secret_access_key: ${credencial?.secretKeyId}
-stage:${credencial?.stage}
+aws_access_key_id=${credencial?.accessKeyId}
+aws_secret_access_key=${credencial?.secretKeyId}
+stage=${credencial?.stage}
 `,
     }),
   });
@@ -78,6 +78,21 @@ export async function create({
     body,
   }).then(() => {
     setOpen(false);
+    refetch();
+  });
+}
+
+export async function edit({
+  credencial,
+  refetch,
+}: {
+  credencial: CredentialsProps;
+  refetch: () => void;
+}) {
+  await fetch(`${apiUrl}/edit?stage=${credencial.stage}`, {
+    body: JSON.stringify(credencial),
+    method: "put",
+  }).then(() => {
     refetch();
   });
 }
