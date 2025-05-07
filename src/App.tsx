@@ -49,7 +49,6 @@ function App() {
     },
     {data: string | undefined; refetch: () => void}
   ];
-  console.log("🚀 ~ App ~ currentCredential:", currentCredential);
 
   function handleOpen() {
     if (open) {
@@ -141,6 +140,7 @@ function App() {
           type="primary"
           onClick={async () => {
             await toggleAwsCredentials(credencial).then(() => {
+              form.resetFields();
               refetchCurrentStage();
               showToast({
                 color: "green",
@@ -154,6 +154,7 @@ function App() {
         <br />
 
         <TableComponent
+          refetchCurrentStage={refetchCurrentStage}
           isHidden={hidden}
           currentCredential={currentCredential}
           data={data}

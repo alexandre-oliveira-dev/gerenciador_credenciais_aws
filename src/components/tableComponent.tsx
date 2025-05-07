@@ -1,19 +1,24 @@
 import {Button, Row, Table, Tag, Typography} from "antd";
 import {CredentialsProps} from "../App";
-import {remove} from "../services/httpRequests";
+import {remove, toggleAwsCredentials} from "../services/httpRequests";
+import {MdChangeCircle} from "react-icons/md";
+import useToast from "./toastHook";
 
 export default function TableComponent({
   data,
   currentCredential,
   refetch,
+  refetchCurrentStage,
   isHidden,
 }: {
   data: CredentialsProps[] | undefined;
   currentCredential: string | undefined;
   refetch: () => void;
+  refetchCurrentStage: () => void;
   isHidden: boolean;
 }) {
-  console.log("🚀 ~ currentCredential:", currentCredential);
+  const {showToast} = useToast();
+
   return (
     <Table
       rowKey={x => x.accessKeyId}
@@ -66,7 +71,21 @@ export default function TableComponent({
           title: "Ações",
           render(_, rec) {
             return (
-              <>
+              <Row style={{gap: 10}}>
+                <Button
+                  title="alterar"
+                  onClick={async () => {
+                    await toggleAwsCredentials(rec).then(() => {
+                      refetchCurrentStage();
+                      showToast({
+                        color: "green",
+                        text: `Stage alterado para: ${rec?.stage}`,
+                      });
+                    });
+                  }}
+                >
+                  <MdChangeCircle size={20} color="green"></MdChangeCircle>
+                </Button>
                 <Button
                   title="deletar"
                   onClick={() => remove({refetch, stage: rec.stage})}
@@ -78,7 +97,7 @@ export default function TableComponent({
                     alt="trash--v1"
                   />
                 </Button>
-              </>
+              </Row>
             );
           },
         },

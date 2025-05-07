@@ -67,7 +67,7 @@ export async function create({
     accessKeyId: values.accessKeyId,
     secretKeyId: values.secretKeyId,
     stage: values.stage?.toLocaleLowerCase(),
-    sessionKey: values?.sessionKey,
+    sessionToken: values?.sessionToken,
   });
 
   await fetch(`${apiUrl}/create`, {
