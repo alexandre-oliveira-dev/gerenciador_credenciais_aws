@@ -89,9 +89,12 @@ export async function edit({
   credencial: CredentialsProps;
   refetch: () => void;
 }) {
-  await fetch(`${apiUrl}/edit?stage=${credencial.stage}`, {
-    body: JSON.stringify(credencial),
-    method: "put",
+  await fetch(`${apiUrl}/edit?stage=${credencial?.stage}`, {
+    body: JSON.stringify({...credencial}),
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
   }).then(() => {
     refetch();
   });

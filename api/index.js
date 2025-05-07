@@ -112,13 +112,13 @@ app.put("/edit", (req, res) => {
   try {
     const currentCredencials = Buffer.from(fs.readFileSync(filePath)).toString('utf-8') || '[]'
 
-    let currentCredencialsParsed = JSON.parse(currentCredencials) 
+    const currentCredencialsParsed = JSON.parse(currentCredencials) 
 
-    currentCredencialsParsed?.filter(item => item?.stage !== query?.stage)
+   const newData = currentCredencialsParsed?.filter(item => item?.stage !== query?.stage)
 
-    currentCredencialsParsed.push(body)
+    newData.push(body)
 
-    fs.writeFileSync(filePath, Buffer.from(JSON.stringify(currentCredencialsParsed)), "utf-8")
+    fs.writeFileSync(filePath, Buffer.from(JSON.stringify(newData)), "utf-8")
     
     return res.json("credencial editada com sucesso!").status(200)
 

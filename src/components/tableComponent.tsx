@@ -46,7 +46,7 @@ export default function TableComponent({
   return (
     <>
       <Table
-        rowKey={x => x.accessKeyId}
+        rowKey={x => x?.accessKeyId}
         size="small"
         dataSource={data}
         columns={[
@@ -161,7 +161,7 @@ export default function TableComponent({
                 name={"stage"}
                 label="Stage"
               >
-                <Input placeholder="Insira o nome do stage"></Input>
+                <Input disabled placeholder="Insira o nome do stage"></Input>
               </Form.Item>
               <Form.Item name={"sessionToken"} label="sessionToken">
                 <TextArea placeholder="Insira o sessionToken (opcional)"></TextArea>
@@ -176,7 +176,7 @@ export default function TableComponent({
         fn={async () => {
           await edit({
             refetch,
-            credencial: stageSelected as CredentialsProps,
+            credencial: form.getFieldsValue(),
           }).then(() => {
             refetchCurrentStage();
             showToast({
