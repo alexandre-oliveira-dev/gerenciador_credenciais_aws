@@ -17,6 +17,7 @@ export type CredentialsProps = {
   accessKeyId: string;
   secretKeyId: string;
   stage: string;
+  sessionToken: string;
 };
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
     },
     {data: string | undefined; refetch: () => void}
   ];
+  console.log("🚀 ~ App ~ currentCredential:", currentCredential);
 
   function handleOpen() {
     if (open) {

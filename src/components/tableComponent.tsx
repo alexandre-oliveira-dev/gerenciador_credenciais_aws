@@ -13,8 +13,10 @@ export default function TableComponent({
   refetch: () => void;
   isHidden: boolean;
 }) {
+  console.log("🚀 ~ currentCredential:", currentCredential);
   return (
     <Table
+      rowKey={x => x.accessKeyId}
       size="small"
       dataSource={data}
       columns={[
@@ -51,9 +53,10 @@ export default function TableComponent({
                   {text}
                 </Tag>
                 <>
-                  {currentCredential && rec?.stage === currentCredential && (
-                    <Tag color="green">{"Atual"}</Tag>
-                  )}
+                  {currentCredential &&
+                    rec?.stage === currentCredential?.trim() && (
+                      <Tag color="green">{"Atual"}</Tag>
+                    )}
                 </>
               </Row>
             );

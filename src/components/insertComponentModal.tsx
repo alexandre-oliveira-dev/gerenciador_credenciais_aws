@@ -1,4 +1,5 @@
 import {Form, FormInstance, Input, Modal} from "antd";
+import TextArea from "antd/es/input/TextArea";
 
 type Props = {
   open: boolean;
@@ -36,10 +37,13 @@ export default function InsertComponent({
           name={"secretKeyId"}
           label="SecretKeyId"
         >
-          <Input placeholder="Digite a chave secreta"></Input>
+          <Input placeholder="Insira a chave secreta"></Input>
         </Form.Item>
         <Form.Item rules={[{required: true}]} name={"stage"} label="Stage">
-          <Input placeholder="Digite o nome do stage"></Input>
+          <Input placeholder="Insira o nome do stage"></Input>
+        </Form.Item>
+        <Form.Item name={"sessionToken"} label="sessionToken">
+          <TextArea placeholder="Insira o sessionToken (opcional)"></TextArea>
         </Form.Item>
         <span id="toas-error"></span>
       </Form>

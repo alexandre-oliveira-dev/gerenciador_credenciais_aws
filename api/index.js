@@ -19,7 +19,6 @@ app.post('/changeCredential',  (req, res) => {
   const file = body.file 
 
   const homeDir = os.homedir();
-
   const awsDir = path.join(homeDir, '.aws');
   const filePath = path.join(awsDir, 'credentials');
 

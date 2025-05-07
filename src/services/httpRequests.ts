@@ -15,11 +15,20 @@ export async function toggleAwsCredentials(credencial: CredentialsProps) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      file: `
+      file: credencial.sessionToken
+        ? `
 [default]
 aws_access_key_id: ${credencial?.accessKeyId}
 aws_secret_access_key: ${credencial?.secretKeyId}
-stage:${credencial?.stage}`,
+aws_session_token:${credencial.sessionToken}
+stage:${credencial?.stage}
+`
+        : `
+[default]
+aws_access_key_id: ${credencial?.accessKeyId}
+aws_secret_access_key: ${credencial?.secretKeyId}
+stage:${credencial?.stage}
+`,
     }),
   });
 }
@@ -58,6 +67,7 @@ export async function create({
     accessKeyId: values.accessKeyId,
     secretKeyId: values.secretKeyId,
     stage: values.stage?.toLocaleLowerCase(),
+    sessionKey: values?.sessionKey,
   });
 
   await fetch(`${apiUrl}/create`, {
