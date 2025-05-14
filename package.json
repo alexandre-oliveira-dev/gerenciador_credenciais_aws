@@ -1,7 +1,7 @@
 {
   "name": "gerenciador_aws",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "electron.js",
   "type": "module",
   "homepage": "https://github.com/alexandre-oliveira-dev/gerenciador_credenciais_aws",
@@ -47,7 +47,7 @@
     "start:all": "concurrently  \"npm run start\"",
     "build-app": "electron-builder --linux --win",
     "deploy-win": "npm run build && electron-builder --win",
-    "install-ubuntu": "sudo dpkg -i ./exec-files/gerenciador_aws_1.0.0_amd64.deb",
+    "install-ubuntu": "sudo dpkg -i ./exec-files/gerenciador_aws_1.0.2_amd64.deb",
     "delete-not-necessary-files": "rm -rf exec-files/*.yml exec-files/linux-unpacked exec-files/win-unpacked exec-files/*.blockmap exec-files/*.yaml",
     "deploy": "npm run build && npm run build-app && yarn install-ubuntu && yarn delete-not-necessary-files"
   },

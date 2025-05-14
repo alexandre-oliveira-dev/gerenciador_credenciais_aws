@@ -10,7 +10,7 @@ const __dirname = dirname(__filename);
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
-    height: 600,
+    height: 700,
     center: true,
     autoHideMenuBar:true,
     icon: './public/icon.ico',

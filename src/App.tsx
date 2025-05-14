@@ -11,7 +11,7 @@ import useToast from "./components/toastHook";
 import Toast from "./components/toast";
 import TableComponent from "./components/tableComponent";
 import {FiEye} from "react-icons/fi";
-import {GiSemiClosedEye} from "react-icons/gi";
+import {LuEyeClosed} from "react-icons/lu";
 
 export type CredentialsProps = {
   accessKeyId: string;
@@ -23,9 +23,9 @@ export type CredentialsProps = {
 function App() {
   const [open, setOpen] = useState(false);
   const [form] = useForm<CredentialsProps>();
-  let credencial: CredentialsProps;
   const {toastProps, showToast} = useToast();
   const [hidden, setIsHidden] = useState(false);
+  let credencial: CredentialsProps;
 
   const [
     {data, isLoading, refetch},
@@ -107,6 +107,7 @@ function App() {
             Nova +
           </Button>
           <Button
+            title={hidden ? "Mostar" : "Esconder"}
             onClick={() => {
               if (hidden) {
                 setIsHidden(false);
@@ -115,7 +116,7 @@ function App() {
               setIsHidden(true);
             }}
           >
-            {hidden ? <FiEye></FiEye> : <GiSemiClosedEye></GiSemiClosedEye>}
+            {hidden ? <FiEye></FiEye> : <LuEyeClosed />}
           </Button>
         </Row>
 

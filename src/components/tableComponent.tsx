@@ -4,7 +4,7 @@ import {edit, remove, toggleAwsCredentials} from "../services/httpRequests";
 import {MdChangeCircle} from "react-icons/md";
 import useToast from "./toastHook";
 import Toast from "./toast";
-import {FiEdit} from "react-icons/fi";
+import {FiEdit, FiTrash} from "react-icons/fi";
 import {useEffect, useState} from "react";
 import ModalConfirmComponent from "./modalConfirmComponent";
 import TextArea from "antd/es/input/TextArea";
@@ -43,6 +43,23 @@ export default function TableComponent({
     });
   }, [stageSelected, form]);
 
+  async function editCredential() {
+    await edit({
+      refetch,
+      credencial: form.getFieldsValue(),
+    }).then(async () => {
+      await toggleAwsCredentials(stageSelected as CredentialsProps).then(() => {
+        refetchCurrentStage();
+        form.resetFields();
+        handleOpen();
+        showToast({
+          color: "green",
+          text: `Stage alterado para: ${stageSelected?.stage}`,
+        });
+      });
+    });
+  }
+
   return (
     <>
       <Table
@@ -55,8 +72,8 @@ export default function TableComponent({
             dataIndex: "accessKeyId",
             render(text) {
               return (
-                <Typography.Text id="hiddenKey" copyable>
-                  {isHidden ? "************" : text}
+                <Typography.Text id="hiddenKey" copyable={!isHidden}>
+                  {isHidden ? "⚫⚫⚫⚫⚫⚫" : text}
                 </Typography.Text>
               );
             },
@@ -66,8 +83,8 @@ export default function TableComponent({
             dataIndex: "secretKeyId",
             render(text) {
               return (
-                <Typography.Text id="hiddenKey" copyable>
-                  {isHidden ? "************" : text}
+                <Typography.Text id="hiddenKey" copyable={!isHidden}>
+                  {isHidden ? "⚫⚫⚫⚫⚫⚫" : text}
                 </Typography.Text>
               );
             },
@@ -122,14 +139,13 @@ export default function TableComponent({
                   </Button>
                   <Button
                     title="deletar"
-                    onClick={() => remove({refetch, stage: rec.stage})}
+                    onClick={() => {
+                      if (window.confirm("Deseja realmente excluir ?")) {
+                        remove({refetch, stage: rec.stage});
+                      }
+                    }}
                   >
-                    <img
-                      width="14"
-                      height="14"
-                      src="https://img.icons8.com/fluency-systems-regular/48/trash--v1.png"
-                      alt="trash--v1"
-                    />
+                    <FiTrash></FiTrash>
                   </Button>
                 </Row>
               );
@@ -173,18 +189,7 @@ export default function TableComponent({
         handleOpen={handleOpen}
         open={open}
         title={`Editar stage: ${stageSelected?.stage}`}
-        fn={async () => {
-          await edit({
-            refetch,
-            credencial: form.getFieldsValue(),
-          }).then(() => {
-            refetchCurrentStage();
-            showToast({
-              color: "green",
-              text: `Stage alterado para: ${stageSelected?.stage}`,
-            });
-          });
-        }}
+        fn={editCredential}
       ></ModalConfirmComponent>
     </>
   );
